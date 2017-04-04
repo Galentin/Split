@@ -45,8 +45,6 @@ public class SplitLauncher {
             return;
         }
 
-        Split split = new Split(inputName, outputName, number, numbering);
-
         try {
             if (numberSymbol && numberOutputFiles || numberOutputFiles && numberLines || numberLines && numberSymbol)
                 System.err.println("Impossible combination");
