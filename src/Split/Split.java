@@ -2,148 +2,80 @@ package Split;
 
 import java.io.*;
 
+public class Split implements NumberFiles {
+    private final String nameI;
+    private final String nameO;
+    private final int number;
+    private final boolean numbering;
 
-public class Split {
-
-    private final String NameI;
-    private final String NameO;
-    private final int Number;
-    private final boolean Numbering;
-
-    public Split(String NameI, String NameO, int Number, boolean Numbering) {
-        this.NameI = NameI;
-        this.NameO = NameO;
-        this.Number = Number;
-        this.Numbering = Numbering;
+    public Split(String nameI, String nameO, int number, boolean numbering) {
+        this.nameI = nameI;
+        this.nameO = nameO;
+        this.number = number;
+        this.numbering = numbering;
     }
 
-    public static void numberLines(String NameI, String NameO, int Number, boolean Numbering) throws IOException {
-        try (BufferedReader in = new BufferedReader(new FileReader(NameI))) {
-            StringBuilder str = new StringBuilder();
-            String s = in.readLine();
-            if (Number == 0) Number = 100;
+    @Override
+    public String number(boolean numbering, int number, String nameO) {
+        String fileOutput;
+        if (numbering) {
+            fileOutput = nameO + number;
+        } else {
+            String ABC = "abcdefghijklmnopqrstuvwxyz";
+            fileOutput = nameO + ABC.charAt(number - 1);
+        }
+        return fileOutput;
+    }
+
+    public void numberLines(String nameI, String nameO, int number, boolean numbering) throws IOException {
+        try (BufferedReader in = new BufferedReader(new FileReader(nameI))) {
             int numberlinesFile = 0;
             int numberFile = 1;
-            if (Numbering) {
-                while (s != null) {
-                    while (numberlinesFile < Number && s != null) {
-                        str.append(s).append("\n");
-                        s = in.readLine();
-                        numberlinesFile++;
-                    }
-                    String FileOutput = NameO + numberFile;
-                    PrintWriter out = new PrintWriter(FileOutput);
-                    out.print(str.toString());
-                    out.close();
-                    str.delete(0, str.length());
-                    numberlinesFile = 0;
-                    numberFile++;
+            String s = in.readLine();
+            while (s != null) {
+                StringBuilder str = new StringBuilder();
+                while (numberlinesFile < number && s != null) {
+                    str.append(s).append("\n");
+                    s = in.readLine();
+                    numberlinesFile++;
                 }
-            } else {
-                String ABC = "abcdefghijklmnopqrstuvwxyz";
-                while (s != null) {
-                    while (numberlinesFile < Number && s != null) {
-                        str.append(s).append("\n");
-                        s = in.readLine();
-                        numberlinesFile++;
-                    }
-                    String FileOutput = NameO + ABC.charAt(numberFile - 1);
-                    PrintWriter out = new PrintWriter(FileOutput);
-                    out.print(str.toString());
-                    out.close();
-                    numberlinesFile = 0;
-                    numberFile++;
-                    str.delete(0, str.length());
-                }
+                PrintWriter out = new PrintWriter(number(numbering, numberFile, nameO));
+                out.print(str.toString());
+                out.close();
+                numberlinesFile = 0;
+                numberFile++;
             }
         }
     }
 
-    public static void numberSymbol(String NameI, String NameO, int Number, boolean Numbering) throws IOException {
-        try (BufferedReader in = new BufferedReader(new FileReader(NameI))) {
-            if (Number == 0) System.err.println("Impossible combination");
-            StringBuilder str = new StringBuilder();
+    public void numberSymbol(String nameI, String nameO, int number, boolean numbering) throws IOException {
+        try (BufferedReader in = new BufferedReader(new FileReader(nameI))) {
+            if (number == 0) System.err.println("Impossible combination");
             int s = in.read();
             int numbersymbolFile = 0;
             int numberFile = 1;
-            if (Numbering) {
-                while (s != -1) {
-                    while (numbersymbolFile < Number && s != -1) {
-                        str.append((char) s);
-                        s = in.read();
-                        numbersymbolFile++;
-                    }
-                    String FileOutput = NameO + numberFile;
-                    PrintWriter out = new PrintWriter(FileOutput);
-                    out.print(str.toString());
-                    out.close();
-                    numbersymbolFile = 0;
-                    numberFile++;
-                    str.delete(0, str.length());
+            while (s != -1) {
+                StringBuilder str = new StringBuilder();
+                while (numbersymbolFile < number && s != -1) {
+                    str.append((char) s);
+                    s = in.read();
+                    numbersymbolFile++;
                 }
-            } else {
-                String ABC = "abcdefghijklmnopqrstuvwxyz";
-                while (s != -1) {
-                    while (numbersymbolFile < Number && s != -1) {
-                        str.append((char) s);
-                        s = in.read();
-                        numbersymbolFile++;
-                    }
-                    String FileOutput = NameO + ABC.charAt(numberFile - 1);
-                    PrintWriter out = new PrintWriter(FileOutput);
-                    out.print(str.toString());
-                    out.close();
-                    numbersymbolFile = 0;
-                    numberFile++;
-                    str.delete(0, str.length());
-                }
+                PrintWriter out = new PrintWriter(number(numbering, numberFile, nameO));
+                out.print(str.toString());
+                out.close();
+                numbersymbolFile = 0;
+                numberFile++;
             }
         }
     }
 
-    public static void numberOutputFiles(String NameI, String NameO, int Number, boolean Numbering) throws IOException {
-        try (BufferedReader in = new BufferedReader(new FileReader(NameI))) {
-            if (Number == 0) System.err.println("Impossible combination");
-            LineNumberReader linenumber = new LineNumberReader(new FileReader(NameI));
-            StringBuilder str = new StringBuilder();
-            String s = in.readLine();
-            int numberlinesFile = 0;
-            int numberFile = 1;
-            int averageLines = 0;
-            while (linenumber.readLine() != null) numberlinesFile++;
-            numberlinesFile = (int) Math.ceil((double) numberlinesFile / Number);
-            if (Numbering) {
-                while (s != null) {
-                    while (averageLines < numberlinesFile && s != null) {
-                        str.append(s).append("\n");
-                        s = in.readLine();
-                        averageLines++;
-                    }
-                    String FileOutput = NameO + numberFile;
-                    PrintWriter out = new PrintWriter(FileOutput);
-                    out.print(str.toString());
-                    out.close();
-                    averageLines = 0;
-                    numberFile++;
-                    str.delete(0, str.length());
-                }
-            } else {
-                String ABC = "abcdefghijklmnopqrstuvwxyz";
-                while (s != null) {
-                    while (averageLines < numberlinesFile && s != null) {
-                        str.append(s).append("\n");
-                        s = in.readLine();
-                        averageLines++;
-                    }
-                    String FileOutput = NameO + ABC.charAt(numberFile - 1);
-                    PrintWriter out = new PrintWriter(FileOutput);
-                    out.print(str.toString());
-                    out.close();
-                    averageLines = 0;
-                    numberFile++;
-                    str.delete(0, str.length());
-                }
-            }
-        }
+    public void numberOutputFiles(String nameI, String nameO, int number, boolean numbering) throws IOException {
+        if (number == 0) System.err.println("Impossible combination");
+        LineNumberReader linenumber = new LineNumberReader(new FileReader(nameI));
+        int numberlinesFile = 0;
+        while (linenumber.readLine() != null) numberlinesFile++;
+        numberlinesFile = (int) Math.ceil((double) numberlinesFile / number);
+        numberLines(nameI, nameO, numberlinesFile, numbering);
     }
 }

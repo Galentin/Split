@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class SplitLauncher {
     @Option(name = "-d", metaVar = "Numbering", required = false)
-    private boolean numbering;
+    private boolean numbering = false;
 
     @Option(name = "-l", required = false)
     private boolean numberLines;
@@ -23,8 +23,8 @@ public class SplitLauncher {
     @Argument(metaVar = "Number", required = true)
     private int number;
 
-    @Option(name = "-o", metaVar = "NameO", required = true)
-    private String outputName;
+    @Option(name = "-o", metaVar = "NameO", required = false)
+    private String outputName = "x";
 
     @Argument(metaVar = "NameI", index = 1, required = true)
     private String inputName;
@@ -47,13 +47,17 @@ public class SplitLauncher {
 
         try {
             if (numberSymbol && numberOutputFiles || numberOutputFiles && numberLines || numberLines && numberSymbol)
-                System.err.println("Impossible combination");
+               System.err.println("Impossible combination");
             else {
-                if (outputName.isEmpty()) outputName = "x";
                 if (outputName.contentEquals("-")) outputName = inputName;
-                if (numberLines) Split.numberLines(inputName, outputName, number, numbering);
-                if (numberSymbol) Split.numberSymbol(inputName, outputName, number, numbering);
-                if (numberOutputFiles) Split.numberOutputFiles(inputName, outputName, number, numbering);
+                Split split = new Split(inputName, outputName, number, numbering);
+
+                if (numberLines) {
+                    if (number == 0) number = 100;
+                    split.numberLines(inputName, outputName, number, numbering);
+                }
+                if (numberSymbol) split.numberSymbol(inputName, outputName, number, numbering);
+                if (numberOutputFiles) split.numberOutputFiles(inputName, outputName, number, numbering);
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
