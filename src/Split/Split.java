@@ -17,12 +17,22 @@ public class Split implements NumberFiles {
 
     @Override
     public String number(boolean numbering, int number, String nameO) {
-        String fileOutput;
+        String fileOutput = nameO;
         if (numbering) {
-            fileOutput = nameO + number;
+            fileOutput = fileOutput + number;
         } else {
             String ABC = "abcdefghijklmnopqrstuvwxyz";
-            fileOutput = nameO + ABC.charAt(number - 1);
+            int i = 1;
+            int Number = number;
+            while (Number / 676.00 > 1) {
+                Number = Number / 26;
+                i++;
+            }
+            for (int j = i; j >= 0; j--) {
+                fileOutput = fileOutput + ABC.charAt(((int) Math.ceil(number / Math.pow(26, j))) - 1);
+                number = number - (int) Math.pow(26, j) * (int) Math.floor(number / Math.pow(26, j));
+                if (number == 0) number = 26;
+            }
         }
         return fileOutput;
     }
@@ -50,7 +60,6 @@ public class Split implements NumberFiles {
 
     public void numberSymbol(String nameI, String nameO, int number, boolean numbering) throws IOException {
         try (BufferedReader in = new BufferedReader(new FileReader(nameI))) {
-            if (number == 0) System.err.println("Impossible combination");
             int s = in.read();
             int numbersymbolFile = 0;
             int numberFile = 1;
@@ -71,7 +80,6 @@ public class Split implements NumberFiles {
     }
 
     public void numberOutputFiles(String nameI, String nameO, int number, boolean numbering) throws IOException {
-        if (number == 0) System.err.println("Impossible combination");
         LineNumberReader linenumber = new LineNumberReader(new FileReader(nameI));
         int numberlinesFile = 0;
         while (linenumber.readLine() != null) numberlinesFile++;

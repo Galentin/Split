@@ -12,21 +12,18 @@ public class SplitLauncher {
     private boolean numbering = false;
 
     @Option(name = "-l", required = false)
-    private boolean numberLines;
+    private int numberLines = -1;
 
     @Option(name = "-c", required = false)
-    private boolean numberSymbol;
+    private int numberSymbol = -1;
 
     @Option(name = "-n", required = false)
-    private boolean numberOutputFiles;
-
-    @Argument(metaVar = "Number", required = true)
-    private int number;
+    private int numberOutputFiles = -1;
 
     @Option(name = "-o", metaVar = "NameO", required = false)
     private String outputName = "x";
 
-    @Argument(metaVar = "NameI", index = 1, required = true)
+    @Argument(metaVar = "NameI", required = true)
     private String inputName;
 
     public static void main(String[] args) {
@@ -46,18 +43,23 @@ public class SplitLauncher {
         }
 
         try {
-            if (numberSymbol && numberOutputFiles || numberOutputFiles && numberLines || numberLines && numberSymbol)
-               System.err.println("Impossible combination");
-            else {
+            if ((numberSymbol == -1 && numberOutputFiles == -1 && numberLines != -1) || (numberOutputFiles == -1 && numberLines == -1 && numberSymbol != -1) || (numberLines == -1 && numberSymbol == -1 && numberOutputFiles != -1)) {
                 if (outputName.contentEquals("-")) outputName = inputName;
-                Split split = new Split(inputName, outputName, number, numbering);
-
-                if (numberLines) {
-                    if (number == 0) number = 100;
-                    split.numberLines(inputName, outputName, number, numbering);
+                Split split = new Split(inputName, outputName, numberLines, numbering);
+                if (numberLines != -1) {
+                    if (numberLines == 0) numberLines = 100;
+                    split.numberLines(inputName, outputName, numberLines, numbering);
                 }
-                if (numberSymbol) split.numberSymbol(inputName, outputName, number, numbering);
-                if (numberOutputFiles) split.numberOutputFiles(inputName, outputName, number, numbering);
+                if (numberSymbol != -1) {
+                    if (numberSymbol == 0) throw new IllegalArgumentException();
+                    split.numberSymbol(inputName, outputName, numberSymbol, numbering);
+                }
+                if (numberOutputFiles != -1) {
+                    if (numberOutputFiles == 0) throw new IllegalArgumentException();
+                    split.numberOutputFiles(inputName, outputName, numberOutputFiles, numbering);
+                }
+            } else {
+                throw new IllegalArgumentException();
             }
         } catch (IOException e) {
             System.err.println(e.getMessage());
